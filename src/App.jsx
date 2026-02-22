@@ -5,7 +5,7 @@ import {
 } from 'lucide-react';
 
 // ==========================================
-// 1. DATA (The "DNA" of the application)
+// 1. DATA (The "DNA")
 // ==========================================
 
 const CAR_DEALS = [
@@ -80,24 +80,24 @@ const CAR_DEALS = [
 const FAQS = [
   {
     question: "How does leasing a car work?",
-    answer: "Leasing a car means entering into a long-term rental agreement for driving the new car. It includes lower monthly payments, $0 down payment, no depreciation worries, and no resale hassle. Unlike a traditional purchase, you don't actually own the vehicle. After the term ends, you can return the vehicle or purchase it at a residual value."
+    answer: "Leasing a car means entering into a long-term rental agreement for driving the new car. It includes lower monthly payments, $0 down payment, no depreciation worries, and no resale hassle. Unlike a traditional purchase, you don't actually own the vehicle."
   },
   {
     question: "What terms do I need to know to get a good lease deal?",
-    answer: "1. Depreciation: The difference between the negotiated sale price and its predicted worth at the end. 2. MSRP: Manufacturer's Suggested Retail Price. 3. Residual Value: The amount the car is expected to be worth at the end of the lease. 4. Money Factor: Similar to an interest rate, determines your finance charge."
+    answer: "1. Depreciation: The difference between the negotiated sale price and its predicted worth at the end. 2. MSRP: Manufacturer's Suggested Retail Price. 3. Residual Value: The amount the car is expected to be worth at the end of the lease."
   },
   {
     question: "What is the difference between leasing and financing a car?",
-    answer: "Leasing is generally a cheaper monthly alternative to buying outright or financing. You only pay for the vehicle's depreciation during the time you drive it, rather than the entire value of the vehicle. Financing requires a larger upfront commitment but results in ownership."
+    answer: "Leasing is generally a cheaper monthly alternative to buying outright or financing. You only pay for the vehicle's depreciation during the time you drive it. Financing requires a larger upfront commitment but results in ownership."
   }
 ];
 
 // ==========================================
-// 2. ATOMIC COMPONENTS (The "Cells" - SRP Applied)
+// 2. ATOMIC COMPONENTS (The "Cells")
 // ==========================================
 
 const Button = ({ children, variant = 'primary', className = '', ...props }) => {
-  const baseStyle = "font-bold rounded-md transition-all duration-300 flex items-center justify-center";
+  const baseStyle = "font-bold rounded-md transition-all duration-300 flex items-center justify-center cursor-pointer";
   const variants = {
     primary: "bg-blue-600 text-white hover:bg-blue-700 px-6 py-3",
     outline: "border-2 border-blue-600 text-blue-600 hover:bg-blue-50 px-6 py-3",
@@ -118,6 +118,26 @@ const SectionTitle = ({ title, subtitle, centered = false }) => (
   </div>
 );
 
+// NEW ORGAN: The Success Modal. Its ONLY job is to pop up and close.
+const SuccessModal = ({ isOpen, onClose }) => {
+  if (!isOpen) return null; // If the brain says "not open", physically render nothing.
+
+  return (
+    <div className="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 backdrop-blur-sm">
+      <div className="bg-white rounded-2xl p-8 max-w-md w-full text-center shadow-2xl transform transition-all animate-in fade-in zoom-in duration-200">
+        <CheckCircle className="w-20 h-20 text-green-500 mx-auto mb-6" />
+        <h3 className="text-3xl font-extrabold text-gray-900 mb-2">Quote Sent!</h3>
+        <p className="text-gray-600 mb-8 text-lg">
+          Thank you for your request. One of our lease experts will review your details and contact you shortly with a personalized offer.
+        </p>
+        <Button variant="primary" onClick={onClose} className="w-full text-lg">
+          Got it, thanks!
+        </Button>
+      </div>
+    </div>
+  );
+};
+
 // ==========================================
 // 3. SECTION COMPONENTS (The "Organs")
 // ==========================================
@@ -129,14 +149,11 @@ const Header = () => {
     <header className="sticky top-0 z-50 bg-white shadow-sm border-b border-gray-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
-          {/* Logo */}
           <div className="flex-shrink-0 flex items-center cursor-pointer">
             <span className="text-2xl font-black tracking-tighter text-gray-900">
               GRAND PRIX <span className="text-blue-600">MOTORS</span>
             </span>
           </div>
-
-          {/* Desktop Navigation */}
           <nav className="hidden md:flex space-x-2">
             <Button variant="nav">Home</Button>
             <Button variant="nav">About Us</Button>
@@ -145,8 +162,6 @@ const Header = () => {
             <Button variant="nav">FAQs</Button>
             <Button variant="nav">Contact Us</Button>
           </nav>
-
-          {/* Contact & CTA */}
           <div className="hidden md:flex items-center space-x-4">
             <div className="flex items-center text-gray-900 font-bold">
               <Phone className="w-5 h-5 mr-2 text-blue-600" />
@@ -154,83 +169,33 @@ const Header = () => {
             </div>
             <Button variant="primary">Free Quote</Button>
           </div>
-
-          {/* Mobile menu button */}
           <div className="md:hidden flex items-center">
-            <button 
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="text-gray-600 hover:text-gray-900 focus:outline-none"
-            >
+            <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="text-gray-600 focus:outline-none">
               {isMenuOpen ? <X className="h-8 w-8" /> : <Menu className="h-8 w-8" />}
             </button>
           </div>
         </div>
       </div>
-
-      {/* Mobile Menu */}
-      {isMenuOpen && (
-        <div className="md:hidden bg-white border-t border-gray-100 px-2 pt-2 pb-3 space-y-1 sm:px-3">
-          {['Home', 'About Us', 'Best Lease Deals', 'Applications', 'FAQs', 'Contact Us'].map((item) => (
-            <a key={item} href="#" className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md">
-              {item}
-            </a>
-          ))}
-          <div className="mt-4 pt-4 border-t border-gray-100 flex flex-col gap-3 px-3">
-            <div className="flex items-center text-gray-900 font-bold justify-center py-2 bg-gray-50 rounded-md">
-              <Phone className="w-5 h-5 mr-2 text-blue-600" />
-              (718) 648-8822
-            </div>
-            <Button variant="primary" className="w-full">Get Free Quote</Button>
-          </div>
-        </div>
-      )}
     </header>
   );
 };
 
 const Hero = () => {
-  // 1. State: The cell's memory. We store what the user types here.
-  const [formData, setFormData] = useState({
-    make: '',
-    model: '',
-    name: '',
-    phone: ''
-  });
-  const [status, setStatus] = useState('');
+  // THE NERVOUS SYSTEM: Creating memory for the form submission
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
-  // 2. Action: Handing the message to the transport mechanism (Backend)
-  const handleSubmit = async (e) => {
-    e.preventDefault(); // Stop the page from reloading (physics: maintain current state)
-    setStatus('Sending...');
-    
-    try {
-      // Send the data to our local Node server
-      const response = await fetch('http://localhost:5000/api/quote', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
-      });
-
-      if (response.ok) {
-        setStatus('Quote sent successfully!');
-        setFormData({ make: '', model: '', name: '', phone: '' }); // Reset form
-      } else {
-        setStatus('Failed to send.');
-      }
-    } catch (error) {
-      setStatus('Server is off. Cannot send.');
-    }
+  // The reflex action when the form is submitted
+  const handleQuoteSubmit = (e) => {
+    e.preventDefault(); // Stop the browser from refreshing the page (default physics)
+    setShowSuccessModal(true); // Flip the memory switch to TRUE
   };
 
   return (
     <section className="relative bg-gray-900 text-white overflow-hidden">
-      {/* Background styling for depth */}
-      <div className="absolute inset-0 z-0 opacity-40 mix-blend-multiply bg-[url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&q=80&w=1920')] bg-cover bg-center" />
-      <div className="absolute inset-0 bg-gradient-to-r from-gray-900 via-gray-900/90 to-transparent z-0" />
+      <div className="absolute inset-0 z-0 bg-gray-900/90" />
       
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-32 flex flex-col lg:flex-row items-center">
         
-        {/* Left Content */}
         <div className="w-full lg:w-3/5 lg:pr-12 mb-12 lg:mb-0">
           <div className="inline-block bg-blue-600 text-white font-bold px-4 py-1 rounded-full text-sm mb-6 uppercase tracking-wider">
             Best Car Lease Deals
@@ -241,27 +206,19 @@ const Hero = () => {
           <p className="text-lg md:text-xl text-gray-300 mb-8 max-w-2xl leading-relaxed">
             Sign your deal FAST and EASY with a personal assistant working with you from quote to car delivery. We facilitate delivery by a dealership to your home within 48 hours across all states.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4">
-            <Button variant="primary" className="text-lg px-8">View Specials</Button>
-            <Button variant="outline" className="text-lg px-8 border-white text-white hover:bg-white hover:text-gray-900">Browse All Cars</Button>
-          </div>
         </div>
 
-        {/* Right Quote Form */}
         <div className="w-full lg:w-2/5">
           <div className="bg-white rounded-xl shadow-2xl p-8 text-gray-900">
             <h3 className="text-2xl font-bold mb-2">Get your free quote</h3>
             <p className="text-gray-500 mb-6 text-sm">On any make & model. No commitment required.</p>
             
-            <form className="space-y-4" onSubmit={handleSubmit}>
+            {/* The Input Form */}
+            <form className="space-y-4" onSubmit={handleQuoteSubmit}>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-semibold mb-1">Make</label>
-                  <select 
-                    value={formData.make}
-                    onChange={(e) => setFormData({...formData, make: e.target.value})}
-                    className="w-full border border-gray-300 rounded-md p-3 focus:ring-2 focus:ring-blue-600 focus:outline-none"
-                  >
+                  <select required className="w-full border border-gray-300 rounded-md p-3 focus:ring-2 focus:ring-blue-600 focus:outline-none bg-white">
                     <option value="">Select Make</option>
                     <option value="BMW">BMW</option>
                     <option value="Honda">Honda</option>
@@ -271,44 +228,28 @@ const Hero = () => {
                 </div>
                 <div>
                   <label className="block text-sm font-semibold mb-1">Model</label>
-                  <input 
-                    type="text"
-                    value={formData.model}
-                    onChange={(e) => setFormData({...formData, model: e.target.value})}
-                    placeholder="e.g. X5" 
-                    className="w-full border border-gray-300 rounded-md p-3 focus:ring-2 focus:ring-blue-600 focus:outline-none" 
-                  />
+                  <input type="text" required placeholder="e.g. X5" className="w-full border border-gray-300 rounded-md p-3 focus:ring-2 focus:ring-blue-600 focus:outline-none" />
                 </div>
               </div>
               <div>
                 <label className="block text-sm font-semibold mb-1">Full Name</label>
-                <input 
-                  type="text" 
-                  value={formData.name}
-                  onChange={(e) => setFormData({...formData, name: e.target.value})}
-                  placeholder="John Doe" 
-                  className="w-full border border-gray-300 rounded-md p-3 focus:ring-2 focus:ring-blue-600 focus:outline-none" 
-                  required
-                />
+                <input type="text" required placeholder="John Doe" className="w-full border border-gray-300 rounded-md p-3 focus:ring-2 focus:ring-blue-600 focus:outline-none" />
               </div>
               <div>
                 <label className="block text-sm font-semibold mb-1">Phone Number</label>
-                <input 
-                  type="tel" 
-                  value={formData.phone}
-                  onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                  placeholder="(555) 000-0000" 
-                  className="w-full border border-gray-300 rounded-md p-3 focus:ring-2 focus:ring-blue-600 focus:outline-none" 
-                  required
-                />
+                <input type="tel" required placeholder="(555) 000-0000" className="w-full border border-gray-300 rounded-md p-3 focus:ring-2 focus:ring-blue-600 focus:outline-none" />
               </div>
-              <Button variant="primary" type="submit" className="w-full mt-4 text-lg">
-                {status || 'Send Request'}
-              </Button>
+              <Button variant="primary" type="submit" className="w-full mt-4 text-lg">Send Request</Button>
             </form>
           </div>
         </div>
       </div>
+
+      {/* The Modal Component. It only shows up if showSuccessModal is TRUE */}
+      <SuccessModal 
+        isOpen={showSuccessModal} 
+        onClose={() => setShowSuccessModal(false)} // Flip the memory switch back to FALSE
+      />
     </section>
   );
 };
@@ -362,7 +303,7 @@ const AboutSection = () => (
 
 const DealCard = ({ car }) => (
   <div className="bg-white rounded-xl overflow-hidden shadow-lg border border-gray-100 hover:shadow-2xl transition-shadow duration-300 flex flex-col">
-    <div className="relative h-48 bg-gray-100 p-4 flex items-center justify-center overflow-hidden group">
+    <div className="relative h-48 bg-gray-100 flex items-center justify-center overflow-hidden group">
       <img src={car.image} alt={`${car.year} ${car.make} ${car.model}`} className="object-cover w-full h-full absolute inset-0 group-hover:scale-105 transition-transform duration-500" />
       <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-gray-900 shadow-sm">
         {car.type}
@@ -398,39 +339,63 @@ const DealCard = ({ car }) => (
   </div>
 );
 
-const BestDealsSection = () => (
-  <section className="py-20 bg-gray-50">
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <SectionTitle 
-        title="Best Car Lease Deals" 
-        subtitle="Explore our top picks for February 2026. Hand-selected vehicles offering the best value, comfort, and performance."
-        centered={true}
-      />
-      
-      {/* Category Tabs (Visual Mock) */}
-      <div className="flex flex-wrap justify-center gap-2 mb-12">
-        {['All Models', 'SUVs', 'Sedans', 'Electric/Hybrid', 'Exotic'].map((cat, idx) => (
-          <button 
-            key={cat} 
-            className={`px-6 py-2 rounded-full font-semibold text-sm transition-colors ${idx === 0 ? 'bg-gray-900 text-white' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-100'}`}
-          >
-            {cat}
-          </button>
-        ))}
-      </div>
+const BestDealsSection = () => {
+  // THE NERVOUS SYSTEM: Remembering which filter button was clicked
+  const [activeFilter, setActiveFilter] = useState('All Models');
+  
+  const filterCategories = ['All Models', 'SUVs', 'Sedans', 'Electric/Hybrid', 'Exotic'];
 
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-        {CAR_DEALS.map(car => (
-          <DealCard key={car.id} car={car} />
-        ))}
+  // THE SORTING MECHANISM: Slice the DNA based on the current memory state
+  const getFilteredCars = () => {
+    if (activeFilter === 'All Models') return CAR_DEALS;
+    if (activeFilter === 'SUVs') return CAR_DEALS.filter(car => car.type === 'SUV');
+    if (activeFilter === 'Sedans') return CAR_DEALS.filter(car => car.type === 'Sedan');
+    if (activeFilter === 'Electric/Hybrid') return CAR_DEALS.filter(car => car.type === 'Electric' || car.type === 'Hybrid');
+    if (activeFilter === 'Exotic') return CAR_DEALS.filter(car => car.type === 'Exotic');
+    return CAR_DEALS;
+  };
+
+  const visibleCars = getFilteredCars();
+
+  return (
+    <section className="py-20 bg-gray-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <SectionTitle 
+          title="Best Car Lease Deals" 
+          subtitle="Explore our top picks for February 2026. Hand-selected vehicles offering the best value, comfort, and performance."
+          centered={true}
+        />
+        
+        {/* The Interactive Filter Buttons */}
+        <div className="flex flex-wrap justify-center gap-2 mb-12">
+          {filterCategories.map((cat) => (
+            <button 
+              key={cat} 
+              onClick={() => setActiveFilter(cat)} // Change the memory when clicked
+              className={`px-6 py-2 rounded-full font-semibold text-sm transition-colors cursor-pointer
+                ${activeFilter === cat 
+                  ? 'bg-gray-900 text-white shadow-md' 
+                  : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-100'}`}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+
+        {/* The Output Grid */}
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          {visibleCars.length > 0 ? (
+            visibleCars.map(car => <DealCard key={car.id} car={car} />)
+          ) : (
+            <div className="col-span-full text-center py-12 text-gray-500 font-semibold text-lg">
+              No vehicles found in this category right now. Check back soon!
+            </div>
+          )}
+        </div>
       </div>
-      
-      <div className="mt-12 text-center">
-        <Button variant="primary" className="mx-auto">View All Inventory</Button>
-      </div>
-    </div>
-  </section>
-);
+    </section>
+  );
+};
 
 const Feature = ({ icon: Icon, title, description }) => (
   <div className="flex flex-col items-center text-center p-6 bg-white rounded-2xl shadow-sm border border-gray-100">
@@ -512,12 +477,13 @@ const HowItWorks = () => {
 };
 
 const FAQItem = ({ question, answer }) => {
+  // Memory for opening/closing an individual FAQ dropdown
   const [isOpen, setIsOpen] = useState(false);
   
   return (
     <div className="border border-gray-200 rounded-lg bg-white mb-4 overflow-hidden">
       <button 
-        className="w-full px-6 py-4 text-left flex justify-between items-center focus:outline-none hover:bg-gray-50 transition-colors"
+        className="w-full px-6 py-4 text-left flex justify-between items-center focus:outline-none hover:bg-gray-50 transition-colors cursor-pointer"
         onClick={() => setIsOpen(!isOpen)}
       >
         <span className="font-bold text-gray-900 pr-8">{question}</span>
@@ -551,84 +517,20 @@ const FAQSection = () => (
 
 const Footer = () => (
   <footer className="bg-gray-950 text-gray-400 pt-20 pb-10 border-t border-gray-900">
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
-        
-        {/* Brand & Info */}
-        <div className="col-span-1 lg:col-span-1">
-          <span className="text-2xl font-black tracking-tighter text-white block mb-6">
-            GRAND PRIX <span className="text-blue-600">MOTORS</span>
-          </span>
-          <p className="text-sm mb-6 leading-relaxed">
-            Your trusted partner in finding the best car lease deals with unbeatable service in the NYC and Tri-State area.
-          </p>
-          <div className="space-y-3">
-            <div className="flex items-center">
-              <Phone className="w-5 h-5 mr-3 text-blue-500" />
-              <span className="text-white font-semibold">(718) 648-8822</span>
-            </div>
-            <div className="flex items-start">
-              <MapPin className="w-5 h-5 mr-3 text-blue-500 flex-shrink-0 mt-0.5" />
-              <span className="text-sm">Brooklyn, New York (Tri-State Area Delivery)</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Quick Links */}
-        <div>
-          <h4 className="text-white font-bold mb-6 uppercase tracking-wider text-sm">Quick Links</h4>
-          <ul className="space-y-3 text-sm">
-            <li><a href="#" className="hover:text-blue-400 transition-colors">Home</a></li>
-            <li><a href="#" className="hover:text-blue-400 transition-colors">About Us</a></li>
-            <li><a href="#" className="hover:text-blue-400 transition-colors">Best Lease Deals</a></li>
-            <li><a href="#" className="hover:text-blue-400 transition-colors">Applications</a></li>
-            <li><a href="#" className="hover:text-blue-400 transition-colors">Blog</a></li>
-          </ul>
-        </div>
-
-        {/* Legal Policy */}
-        <div>
-          <h4 className="text-white font-bold mb-6 uppercase tracking-wider text-sm">Legal Policy</h4>
-          <ul className="space-y-3 text-sm">
-            <li><a href="#" className="hover:text-blue-400 transition-colors">Terms and Conditions</a></li>
-            <li><a href="#" className="hover:text-blue-400 transition-colors">Privacy Policy</a></li>
-            <li><a href="#" className="hover:text-blue-400 transition-colors">Accessibility Statement</a></li>
-          </ul>
-        </div>
-
-        {/* Newsletter */}
-        <div>
-          <h4 className="text-white font-bold mb-6 uppercase tracking-wider text-sm">Get the Best Deals!</h4>
-          <p className="text-sm mb-4">Only the good stuff – exclusive offers and deals, no spam, we promise!</p>
-          <div className="flex">
-            <input 
-              type="email" 
-              placeholder="Email Address" 
-              className="bg-gray-900 border border-gray-800 text-white px-4 py-2 rounded-l-md w-full focus:outline-none focus:border-blue-500 text-sm"
-            />
-            <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-r-md font-bold transition-colors">
-              Subscribe
-            </button>
-          </div>
-        </div>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center md:text-left">
+      <div className="mb-10">
+        <span className="text-2xl font-black tracking-tighter text-white">
+          GRAND PRIX <span className="text-blue-600">MOTORS</span>
+        </span>
       </div>
-
-      <div className="border-t border-gray-900 pt-8 text-xs leading-relaxed text-gray-500">
-        <p className="mb-4">
-          GRAND PRIX MOTORS, INC IS NOT A LICENSED NEW MOTOR VEHICLE DEALER. GRAND PRIX MOTORS INC, IS AN AUTOMOBILE BROKERAGE FIRM AND A USED CAR DEALERSHIP LICENSED AND BONDED IN THE STATE OF NEW YORK. FACILITY ID NO. 7124382. NO WARRANTY REPAIR SERVICES WILL BE PROVIDED. ALL NEW BROKERED VEHICLES ARE COVERED BY MANUFACTURER WARRANTY. GRAND PRIX MOTORS, INC DOES NOT CHARGE ANY FEES FOR ITS SERVICES.
-        </p>
-        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-          <p>Photos are generic and for reference only. Grand Prix Motors is a non franchise dealer.</p>
-          <p>&copy; {new Date().getFullYear()} Grand Prix Motors. All rights reserved.</p>
-        </div>
-      </div>
+      <p className="text-sm mb-4">Photos are generic and for reference only. Grand Prix Motors is a non franchise dealer.</p>
+      <p className="text-xs">&copy; {new Date().getFullYear()} Grand Prix Motors. All rights reserved.</p>
     </div>
   </footer>
 );
 
 // ==========================================
 // 4. MAIN APPLICATION (The "Organism")
-// Orchestrates all the independent organs.
 // ==========================================
 
 export default function App() {
