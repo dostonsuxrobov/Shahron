@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { 
   Menu, X, Phone, ChevronDown, CheckCircle, 
-  MapPin, Star, Shield, ThumbsUp, Car, Battery, Zap 
+  MapPin, Star, Shield, ThumbsUp, Car, Battery, Zap,
+  Loader2
 } from 'lucide-react';
 
 // ==========================================
@@ -201,10 +202,38 @@ const Header = () => {
 
 const Hero = () => {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState('');
 
-  const handleQuoteSubmit = (e) => {
+  const handleQuoteSubmit = async (e) => {
     e.preventDefault();
-    setShowSuccessModal(true);
+    setIsSubmitting(true);
+    setError('');
+
+    const formData = new FormData(e.target);
+    formData.append("access_key", "776fd99d-a9a4-44e5-b315-69a9cf49ebd2");
+    formData.append("subject", "New Lease Quote Request — Alpha Auto");
+    formData.append("from_name", "Alpha Auto Website");
+
+    try {
+      const res = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        setShowSuccessModal(true);
+        e.target.reset();
+      } else {
+        setError("Something went wrong. Please try again.");
+      }
+    } catch {
+      setError("Network error. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -246,10 +275,13 @@ const Hero = () => {
             <p className="text-gray-500 mb-6 text-sm">On any make & model. No commitment required.</p>
             
             <form className="space-y-4" onSubmit={handleQuoteSubmit}>
+              {/* Hidden honeypot field — catches bots */}
+              <input type="checkbox" name="botcheck" className="hidden" />
+
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-semibold mb-1 uppercase tracking-wider text-gray-400">Make</label>
-                  <select required className="w-full border border-neutral-700 bg-neutral-800 text-white rounded p-3 focus:ring-2 focus:ring-red-600 focus:outline-none focus:border-red-600">
+                  <select name="make" required className="w-full border border-neutral-700 bg-neutral-800 text-white rounded p-3 focus:ring-2 focus:ring-red-600 focus:outline-none focus:border-red-600">
                     <option value="">Select Make</option>
                     <option value="BMW">BMW</option>
                     <option value="Honda">Honda</option>
@@ -259,18 +291,36 @@ const Hero = () => {
                 </div>
                 <div>
                   <label className="block text-xs font-semibold mb-1 uppercase tracking-wider text-gray-400">Model</label>
-                  <input type="text" required placeholder="e.g. X5" className="w-full border border-neutral-700 bg-neutral-800 text-white rounded p-3 focus:ring-2 focus:ring-red-600 focus:outline-none focus:border-red-600 placeholder-gray-600" />
+                  <input type="text" name="model" required placeholder="e.g. X5" className="w-full border border-neutral-700 bg-neutral-800 text-white rounded p-3 focus:ring-2 focus:ring-red-600 focus:outline-none focus:border-red-600 placeholder-gray-600" />
                 </div>
               </div>
               <div>
                 <label className="block text-xs font-semibold mb-1 uppercase tracking-wider text-gray-400">Full Name</label>
-                <input type="text" required placeholder="John Doe" className="w-full border border-neutral-700 bg-neutral-800 text-white rounded p-3 focus:ring-2 focus:ring-red-600 focus:outline-none focus:border-red-600 placeholder-gray-600" />
+                <input type="text" name="name" required placeholder="John Doe" className="w-full border border-neutral-700 bg-neutral-800 text-white rounded p-3 focus:ring-2 focus:ring-red-600 focus:outline-none focus:border-red-600 placeholder-gray-600" />
               </div>
               <div>
                 <label className="block text-xs font-semibold mb-1 uppercase tracking-wider text-gray-400">Phone Number</label>
-                <input type="tel" required placeholder="(555) 000-0000" className="w-full border border-neutral-700 bg-neutral-800 text-white rounded p-3 focus:ring-2 focus:ring-red-600 focus:outline-none focus:border-red-600 placeholder-gray-600" />
+                <input type="tel" name="phone" required placeholder="(555) 000-0000" className="w-full border border-neutral-700 bg-neutral-800 text-white rounded p-3 focus:ring-2 focus:ring-red-600 focus:outline-none focus:border-red-600 placeholder-gray-600" />
               </div>
-              <Button variant="primary" type="submit" className="w-full mt-4 text-lg">Send Request</Button>
+
+              {error && (
+                <p className="text-red-400 text-sm text-center">{error}</p>
+              )}
+
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full mt-4 text-lg font-bold rounded transition-all duration-300 flex items-center justify-center cursor-pointer uppercase tracking-wider bg-red-600 text-white hover:bg-red-700 px-6 py-3 shadow-lg shadow-red-600/20 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                    Sending...
+                  </>
+                ) : (
+                  'Send Request'
+                )}
+              </button>
             </form>
           </div>
         </div>
