@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { 
   Menu, X, Phone, ChevronDown, CheckCircle, 
-  MapPin, Star, Shield, ThumbsUp, Car, Battery, Zap,
-  Loader2
+  Star, Shield, ThumbsUp, Car, Loader2, ArrowLeft,
+  FileText, MessageSquare, Lock, UserCheck, Mail
 } from 'lucide-react';
 
 // ==========================================
@@ -152,32 +152,56 @@ const SuccessModal = ({ isOpen, onClose }) => {
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+  const navItems = [
+    { label: 'Home', href: '#home' },
+    { label: 'About Us', href: '#about' },
+    { label: 'Lease Deals', href: '#deals' },
+    { label: 'How It Works', href: '#how-it-works' },
+    { label: 'FAQs', href: '#faqs' },
+    { label: 'Privacy Policy', href: '#privacy-policy' },
+  ];
+
   return (
     <header className="sticky top-0 z-50 bg-black/95 backdrop-blur-md border-b border-neutral-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
-          <div className="flex-shrink-0 flex items-center cursor-pointer">
+          <a href="#home" className="flex-shrink-0 flex items-center">
             <span className="text-2xl font-black tracking-tighter text-white">
               ALPHA <span className="text-red-600">AUTO</span>
             </span>
-          </div>
-          <nav className="hidden md:flex space-x-1">
-            <Button variant="nav">Home</Button>
-            <Button variant="nav">About Us</Button>
-            <Button variant="nav">Best Lease Deals</Button>
-            <Button variant="nav">Applications</Button>
-            <Button variant="nav">FAQs</Button>
-            <Button variant="nav">Contact Us</Button>
+          </a>
+          <nav className="hidden lg:flex items-center space-x-1" aria-label="Main navigation">
+            {navItems.map((item) => (
+              <a
+                key={item.label}
+                href={item.href}
+                className={`rounded px-3 py-2 text-xs font-bold uppercase tracking-wider transition-colors ${
+                  item.href === '#privacy-policy'
+                    ? 'border border-neutral-700 text-white hover:border-red-600 hover:text-red-500'
+                    : 'text-gray-300 hover:text-red-500'
+                }`}
+              >
+                {item.label}
+              </a>
+            ))}
           </nav>
-          <div className="hidden md:flex items-center space-x-4">
-            <div className="flex items-center text-white font-bold text-sm">
+          <div className="hidden xl:flex items-center space-x-4">
+            <a href="tel:+19294797777" className="flex items-center text-white hover:text-red-500 font-bold text-sm transition-colors">
               <Phone className="w-4 h-4 mr-2 text-red-500" />
               +1 (929) 479-7777
-            </div>
-            <Button variant="primary">Free Quote</Button>
+            </a>
+            <a href="#quote" className="font-bold rounded transition-all duration-300 flex items-center justify-center uppercase tracking-wider text-sm bg-red-600 text-white hover:bg-red-700 px-5 py-3 shadow-lg shadow-red-600/20">
+              Free Quote
+            </a>
           </div>
-          <div className="md:hidden flex items-center">
-            <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="text-gray-300 focus:outline-none">
+          <div className="lg:hidden flex items-center">
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="text-gray-300 hover:text-white focus:outline-none"
+              aria-expanded={isMenuOpen}
+              aria-controls="mobile-menu"
+              aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
+            >
               {isMenuOpen ? <X className="h-8 w-8" /> : <Menu className="h-8 w-8" />}
             </button>
           </div>
@@ -185,15 +209,28 @@ const Header = () => {
       </div>
 
       {isMenuOpen && (
-        <div className="md:hidden bg-black border-t border-neutral-800 px-4 pb-6 pt-2 space-y-3">
-          {['Home', 'About Us', 'Best Lease Deals', 'Applications', 'FAQs', 'Contact Us'].map(item => (
-            <a key={item} className="block text-gray-300 hover:text-red-500 font-semibold py-2 text-sm uppercase tracking-wider cursor-pointer">{item}</a>
+        <div id="mobile-menu" className="lg:hidden bg-black border-t border-neutral-800 px-4 pb-6 pt-2 space-y-2">
+          {navItems.map((item) => (
+            <a
+              key={item.label}
+              href={item.href}
+              onClick={() => setIsMenuOpen(false)}
+              className={`block rounded px-3 py-3 font-semibold text-sm uppercase tracking-wider transition-colors ${
+                item.href === '#privacy-policy'
+                  ? 'mt-2 border border-neutral-700 text-white hover:border-red-600 hover:text-red-500'
+                  : 'text-gray-300 hover:bg-neutral-900 hover:text-red-500'
+              }`}
+            >
+              {item.label}
+            </a>
           ))}
-          <div className="flex items-center text-white font-bold text-sm pt-2">
+          <a href="tel:+19294797777" className="flex items-center text-white hover:text-red-500 font-bold text-sm px-3 pt-3 transition-colors">
             <Phone className="w-4 h-4 mr-2 text-red-500" />
             +1 (929) 479-7777
-          </div>
-          <Button variant="primary" className="w-full mt-2">Free Quote</Button>
+          </a>
+          <a href="#quote" onClick={() => setIsMenuOpen(false)} className="mt-4 w-full font-bold rounded transition-all duration-300 flex items-center justify-center uppercase tracking-wider text-sm bg-red-600 text-white hover:bg-red-700 px-6 py-3 shadow-lg shadow-red-600/20">
+            Free Quote
+          </a>
         </div>
       )}
     </header>
@@ -237,7 +274,7 @@ const Hero = () => {
   };
 
   return (
-    <section className="relative bg-black text-white overflow-hidden">
+    <section id="home" className="relative bg-black text-white overflow-hidden scroll-mt-20">
       <div className="absolute inset-0 z-0">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-red-600/10 rounded-full blur-3xl" />
       </div>
@@ -269,7 +306,7 @@ const Hero = () => {
           </div>
         </div>
 
-        <div className="w-full lg:w-2/5">
+        <div id="quote" className="w-full lg:w-2/5 scroll-mt-28">
           <div className="bg-neutral-900 border border-neutral-800 rounded-lg shadow-2xl p-8 text-white">
             <h3 className="text-2xl font-bold mb-2 uppercase">Get your free quote</h3>
             <p className="text-gray-500 mb-6 text-sm">On any make & model. No commitment required.</p>
@@ -335,7 +372,7 @@ const Hero = () => {
 };
 
 const AboutSection = () => (
-  <section className="py-20 bg-neutral-950 border-t border-neutral-800">
+  <section id="about" className="py-20 bg-neutral-950 border-t border-neutral-800 scroll-mt-20">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="grid lg:grid-cols-2 gap-12 items-center">
         <div>
@@ -437,7 +474,7 @@ const BestDealsSection = () => {
   const visibleCars = getFilteredCars();
 
   return (
-    <section className="py-20 bg-black">
+    <section id="deals" className="py-20 bg-black scroll-mt-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <SectionTitle 
           title="Best Car Lease Deals" 
@@ -529,7 +566,7 @@ const HowItWorks = () => {
   ];
 
   return (
-    <section className="py-20 bg-black border-t border-neutral-800">
+    <section id="how-it-works" className="py-20 bg-black border-t border-neutral-800 scroll-mt-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <SectionTitle
           title="Simple Steps to Your New Car"
@@ -578,7 +615,7 @@ const FAQItem = ({ question, answer }) => {
 };
 
 const FAQSection = () => (
-  <section className="py-20 bg-neutral-950 border-t border-neutral-800">
+  <section id="faqs" className="py-20 bg-neutral-950 border-t border-neutral-800 scroll-mt-20">
     <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
       <SectionTitle 
         title="Frequently Asked Questions" 
@@ -625,9 +662,15 @@ const Footer = () => (
           </p>
         </div>
         <div className="flex flex-wrap gap-6 text-sm">
-          {['Home', 'About Us', 'Best Deals', 'Applications', 'FAQs', 'Contact'].map(link => (
-            <a key={link} className="text-gray-500 hover:text-red-500 cursor-pointer font-semibold uppercase tracking-wider text-xs transition-colors">
-              {link}
+          {[
+            { label: 'Home', href: '#home' },
+            { label: 'About Us', href: '#about' },
+            { label: 'Best Deals', href: '#deals' },
+            { label: 'FAQs', href: '#faqs' },
+            { label: 'Privacy Policy', href: '#privacy-policy' },
+          ].map(link => (
+            <a key={link.label} href={link.href} className="text-gray-500 hover:text-red-500 font-semibold uppercase tracking-wider text-xs transition-colors">
+              {link.label}
             </a>
           ))}
         </div>
@@ -644,23 +687,205 @@ const Footer = () => (
   </footer>
 );
 
+const PolicySection = ({ number, title, children }) => (
+  <section className="border-t border-neutral-800 py-8 first:border-t-0 first:pt-0">
+    <div className="flex gap-4">
+      <span className="mt-1 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-red-600/10 text-xs font-black text-red-500">
+        {number}
+      </span>
+      <div className="min-w-0">
+        <h2 className="mb-4 text-xl font-extrabold uppercase tracking-tight text-white md:text-2xl">{title}</h2>
+        <div className="space-y-4 text-[15px] leading-7 text-gray-400 md:text-base">{children}</div>
+      </div>
+    </div>
+  </section>
+);
+
+const PolicyCallout = ({ children }) => (
+  <div className="rounded-lg border border-red-600/30 border-l-4 border-l-red-600 bg-red-600/5 p-5 text-gray-300">
+    {children}
+  </div>
+);
+
+const PrivacyPolicy = () => (
+  <main id="privacy-policy" className="bg-black scroll-mt-20">
+    <section className="relative overflow-hidden border-b border-neutral-800 bg-neutral-950">
+      <div className="absolute left-1/2 top-0 h-72 w-[720px] -translate-x-1/2 rounded-full bg-red-600/10 blur-3xl" />
+      <div className="relative mx-auto max-w-5xl px-4 py-16 sm:px-6 md:py-24 lg:px-8">
+        <a href="#home" className="mb-10 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-gray-400 transition-colors hover:text-red-500">
+          <ArrowLeft className="h-4 w-4" />
+          Back to Alpha Auto
+        </a>
+        <div className="flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
+          <div>
+            <div className="mb-5 inline-flex items-center gap-2 rounded border border-red-600/30 bg-red-600/10 px-3 py-1.5 text-xs font-bold uppercase tracking-widest text-red-500">
+              <FileText className="h-4 w-4" />
+              Legal & Privacy
+            </div>
+            <h1 className="text-4xl font-black uppercase tracking-tight text-white md:text-6xl">Privacy Policy</h1>
+            <p className="mt-5 max-w-2xl text-lg leading-8 text-gray-400">
+              How Alpha Auto LLC collects, uses, protects, and shares information when you use our website and services.
+            </p>
+          </div>
+          <div className="rounded-lg border border-neutral-800 bg-black/60 px-5 py-4">
+            <p className="text-xs font-bold uppercase tracking-widest text-gray-500">Last updated</p>
+            <p className="mt-1 font-bold text-white">July 21, 2026</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section className="mx-auto max-w-5xl px-4 py-12 sm:px-6 md:py-16 lg:px-8">
+      <div className="mb-10 grid gap-4 sm:grid-cols-3">
+        {[
+          { icon: Lock, title: 'Your data', text: 'Reasonable safeguards protect the information you share.' },
+          { icon: MessageSquare, title: 'SMS control', text: 'Reply STOP at any time to opt out of text messages.' },
+          { icon: UserCheck, title: 'No data sales', text: 'We do not sell your personal information.' },
+        ].map(({ icon: Icon, title, text }) => (
+          <div key={title} className="rounded-lg border border-neutral-800 bg-neutral-900 p-5">
+            <Icon className="mb-4 h-6 w-6 text-red-500" />
+            <h2 className="font-bold uppercase tracking-wide text-white">{title}</h2>
+            <p className="mt-2 text-sm leading-6 text-gray-500">{text}</p>
+          </div>
+        ))}
+      </div>
+
+      <div className="rounded-xl border border-neutral-800 bg-neutral-950 p-6 shadow-2xl shadow-black/20 md:p-10">
+        <p className="mb-10 text-base leading-8 text-gray-300 md:text-lg">
+          Alpha Auto LLC (&quot;Alpha Auto,&quot; &quot;we,&quot; &quot;us,&quot; or &quot;our&quot;) operates as an auto brokerage helping customers find, finance, and purchase vehicles. This Privacy Policy explains what information we collect through our website and communications with you, how we use it, and the choices you have — including with respect to SMS/text messaging.
+        </p>
+
+        <PolicySection number="01" title="Information We Collect">
+          <p>We may collect the following types of information when you use our website, contact us, or request our services:</p>
+          <ul className="list-disc space-y-2 pl-5 marker:text-red-500">
+            <li><strong className="text-gray-200">Contact information</strong> you provide, such as your name, phone number, email address, and mailing address.</li>
+            <li><strong className="text-gray-200">Vehicle interest and brokerage details</strong>, such as the make/model you&apos;re looking for, trade-in information, or budget.</li>
+            <li><strong className="text-gray-200">Financing-related information</strong> you voluntarily submit if you request help arranging financing.</li>
+            <li><strong className="text-gray-200">Communication records</strong>, including messages sent through contact forms, phone calls, email, and text messages.</li>
+            <li><strong className="text-gray-200">Technical information</strong> such as browser type, device information, and general usage data collected automatically when you visit our site.</li>
+          </ul>
+        </PolicySection>
+
+        <PolicySection number="02" title="How We Use Your Information">
+          <ul className="list-disc space-y-2 pl-5 marker:text-red-500">
+            <li>To respond to inquiries and provide brokerage services (locating vehicles, coordinating purchases, connecting you with financing options).</li>
+            <li>To communicate with you about your request, appointment, or transaction via phone, email, or SMS text message.</li>
+            <li>To improve our website and services.</li>
+            <li>To comply with legal obligations.</li>
+          </ul>
+        </PolicySection>
+
+        <PolicySection number="03" title="SMS / Text Messaging Terms">
+          <p>By providing your mobile phone number and opting in, you consent to receive text messages from Alpha Auto LLC related to your vehicle inquiry, appointment reminders, financing updates, and customer service communications.</p>
+          <PolicyCallout>
+            <div className="space-y-3">
+              <p><strong className="text-white">Consent is not a condition of purchase.</strong> Message frequency may vary. Message and data rates may apply.</p>
+              <p><strong className="text-white">Opt-out:</strong> You may opt out of text messages at any time by replying <strong className="text-white">STOP</strong> to any message you receive from us. You will receive a one-time confirmation message, and no further messages will be sent unless you opt back in.</p>
+              <p><strong className="text-white">Help:</strong> Reply <strong className="text-white">HELP</strong> for assistance, or contact us directly at <a className="font-semibold text-red-500 hover:text-red-400" href="mailto:sales@alpha-auto.net">sales@alpha-auto.net</a> or <a className="font-semibold text-red-500 hover:text-red-400" href="tel:2232507777">223-250-7777</a>.</p>
+              <p><strong className="text-white">Carriers are not liable</strong> for delayed or undelivered messages.</p>
+            </div>
+          </PolicyCallout>
+        </PolicySection>
+
+        <PolicySection number="04" title="Sharing of Information">
+          <p>We do not sell your personal information. We do not share your information with third parties for their own marketing purposes.</p>
+          <PolicyCallout>
+            <p><strong className="text-white">No mobile opt-in data is shared with third parties.</strong> Text messaging originator opt-in data and consent will not be shared with any third parties or affiliates for any purpose, including marketing and promotional purposes.</p>
+          </PolicyCallout>
+          <p>We may share information with:</p>
+          <ul className="list-disc space-y-2 pl-5 marker:text-red-500">
+            <li>Financing partners or lenders, only when you request our help arranging financing, and only with your knowledge.</li>
+            <li>Service providers who help us operate our business (such as website hosting or communication platforms), who are contractually bound to protect your information.</li>
+            <li>Authorities, when required by law or to protect our legal rights.</li>
+          </ul>
+        </PolicySection>
+
+        <PolicySection number="05" title="Data Security">
+          <p>We use reasonable administrative and technical safeguards to protect your information. However, no method of transmission or storage is 100% secure, and we cannot guarantee absolute security.</p>
+        </PolicySection>
+
+        <PolicySection number="06" title="Your Choices">
+          <ul className="list-disc space-y-2 pl-5 marker:text-red-500">
+            <li>You may opt out of SMS communications at any time by replying STOP.</li>
+            <li>You may request that we delete your contact information by emailing us at <a className="font-semibold text-red-500 hover:text-red-400" href="mailto:sales@alpha-auto.net">sales@alpha-auto.net</a>.</li>
+            <li>You may unsubscribe from promotional emails using the link provided in those emails.</li>
+          </ul>
+        </PolicySection>
+
+        <PolicySection number="07" title="Children's Privacy">
+          <p>Our website and services are not directed to individuals under the age of 18, and we do not knowingly collect personal information from children.</p>
+        </PolicySection>
+
+        <PolicySection number="08" title="Changes to This Policy">
+          <p>We may update this Privacy Policy from time to time. Any changes will be posted on this page with an updated &quot;Last updated&quot; date.</p>
+        </PolicySection>
+
+        <PolicySection number="09" title="Contact Us">
+          <div className="rounded-lg border border-neutral-800 bg-neutral-900 p-6">
+            <p className="text-lg font-extrabold uppercase tracking-wide text-white">Alpha Auto LLC</p>
+            <p>1228 Radcliffe Street, Bristol, PA 19007</p>
+            <div className="flex flex-col gap-3 pt-2 sm:flex-row sm:gap-6">
+              <a className="inline-flex items-center gap-2 font-semibold text-red-500 transition-colors hover:text-red-400" href="mailto:sales@alpha-auto.net">
+                <Mail className="h-4 w-4" /> sales@alpha-auto.net
+              </a>
+              <a className="inline-flex items-center gap-2 font-semibold text-red-500 transition-colors hover:text-red-400" href="tel:2232507777">
+                <Phone className="h-4 w-4" /> 223-250-7777
+              </a>
+            </div>
+          </div>
+        </PolicySection>
+      </div>
+    </section>
+  </main>
+);
+
 // ==========================================
 // 4. MAIN APPLICATION
 // ==========================================
 
 export default function App() {
+  const [route, setRoute] = useState(window.location.hash);
+
+  useEffect(() => {
+    const handleHashChange = () => {
+      setRoute(window.location.hash);
+    };
+
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
+
+  useEffect(() => {
+    document.title = route === '#privacy-policy'
+      ? 'Privacy Policy | Alpha Auto'
+      : 'Alpha Auto | Car Lease Deals';
+
+    const frame = window.requestAnimationFrame(() => {
+      const targetId = route.replace('#', '') || 'home';
+      document.getElementById(targetId)?.scrollIntoView({ behavior: 'smooth' });
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [route]);
+
+  const isPrivacyPolicy = route === '#privacy-policy';
+
   return (
     <div className="min-h-screen bg-black font-sans text-white selection:bg-red-600 selection:text-white">
       <Header />
-      <main>
-        <Hero />
-        <AboutSection />
-        <BestDealsSection />
-        <WhyChooseUs />
-        <HowItWorks />
-        <CTABanner />
-        <FAQSection />
-      </main>
+      {isPrivacyPolicy ? (
+        <PrivacyPolicy />
+      ) : (
+        <main>
+          <Hero />
+          <AboutSection />
+          <BestDealsSection />
+          <WhyChooseUs />
+          <HowItWorks />
+          <CTABanner />
+          <FAQSection />
+        </main>
+      )}
       <Footer />
     </div>
   );
