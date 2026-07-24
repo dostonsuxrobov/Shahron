@@ -644,17 +644,25 @@ const CTABanner = () => (
       <p className="text-red-100 text-lg mb-8 max-w-xl mx-auto">
         Get a personalized lease quote in minutes. No commitment, no hassle.
       </p>
-      <Button
-        variant="primary"
-        onClick={() =>
-          document
-            .getElementById('quote')
-            ?.scrollIntoView({ behavior: 'smooth' })
-        }
-        className="bg-white !text-red-600 hover:bg-gray-100 px-10 py-4 text-lg shadow-xl"
-      >
-        Get Your Free Quote Now
-      </Button>
+      <div className="flex flex-col items-stretch justify-center gap-4 sm:flex-row sm:items-center">
+        <Button
+          variant="primary"
+          onClick={() =>
+            document
+              .getElementById('quote')
+              ?.scrollIntoView({ behavior: 'smooth' })
+          }
+          className="w-full bg-white !text-red-600 hover:bg-gray-100 px-10 py-4 text-lg shadow-xl sm:w-auto"
+        >
+          Get Your Free Quote Now
+        </Button>
+        <a
+          href="#apply"
+          className="flex w-full items-center justify-center rounded bg-black px-10 py-4 text-lg font-bold uppercase tracking-wider text-white shadow-xl transition-all duration-300 hover:bg-neutral-900 sm:w-auto"
+        >
+          Apply
+        </a>
+      </div>
     </div>
   </section>
 );

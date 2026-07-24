@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react';
 import { ArrowLeft, CheckCircle, Loader2, ShieldCheck } from 'lucide-react';
+import { downloadCreditApplicationPdf } from './creditApplicationPdf';
+
+const WEB3FORMS_ACCESS_KEY = '776fd99d-a9a4-44e5-b315-69a9cf49ebd2';
 
 const STATES = [
   'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA',
@@ -410,15 +413,6 @@ export default function CreditApplication() {
       return;
     }
 
-    const endpoint = import.meta.env.VITE_CREDIT_APPLICATION_ENDPOINT;
-
-    if (!endpoint) {
-      setError(
-        'The secure credit-application endpoint has not been configured.',
-      );
-      return;
-    }
-
     const formData = new FormData(event.currentTarget);
 
     // Silently accept bot submissions without sending any customer data.
@@ -428,20 +422,223 @@ export default function CreditApplication() {
     }
 
     formData.delete('botcheck');
-    formData.set('submitted_at', new Date().toISOString());
+    const application = Object.fromEntries(formData.entries());
+    const applicantName =
+      `${application.first_name || 'Unknown'} ${application.last_name || ''}`.trim();
+    const applicantBirthDate = [
+      application.birth_month,
+      application.birth_day,
+      application.birth_year,
+    ]
+      .filter(Boolean)
+      .join('/');
+
+    const submission = new FormData();
+    submission.append('access_key', WEB3FORMS_ACCESS_KEY);
+    submission.append(
+      'subject',
+      `New Credit Application — ${applicantName}`,
+    );
+    submission.append('from_name', 'Alpha Auto Credit Application');
+    submission.append('botcheck', '');
+    submission.append('--- PERSONAL INFO ---', '---');
+    submission.append('Full Name', applicantName);
+    submission.append('Middle Initial', application.middle_initial || '');
+    submission.append('SSN', application.ssn || '');
+    submission.append('Date of Birth', applicantBirthDate);
+    submission.append('Phone', application.phone || '');
+    submission.append('Email', application.email || '');
+    submission.append(
+      'Address',
+      [
+        application.address,
+        application.apt,
+        application.city,
+        application.state,
+        application.zip,
+      ]
+        .filter(Boolean)
+        .join(', '),
+    );
+    submission.append(
+      'Years at Address',
+      application.years_at_address || '',
+    );
+    submission.append(
+      'Residence Type',
+      application.residence_type || '',
+    );
+    submission.append(
+      'Monthly Payment',
+      application.monthly_payment
+        ? `$${Number(application.monthly_payment).toLocaleString()}`
+        : '$0',
+    );
+
+    submission.append('--- EMPLOYMENT ---', '---');
+    submission.append('Employer', application.employer || '');
+    submission.append(
+      'Employer Phone',
+      application.employer_phone || '',
+    );
+    submission.append(
+      'Business Address',
+      [
+        application.business_address,
+        application.business_suite,
+        application.business_city,
+        application.business_state,
+        application.business_zip,
+      ]
+        .filter(Boolean)
+        .join(', '),
+    );
+    submission.append(
+      'Years Employed',
+      application.years_employed || '',
+    );
+    submission.append('Position', application.position || '');
+    submission.append(
+      'Gross Annual Income',
+      application.gross_income
+        ? `$${Number(application.gross_income).toLocaleString()}`
+        : '',
+    );
+    if (application.other_income) {
+      submission.append(
+        'Other Annual Income',
+        `$${Number(application.other_income).toLocaleString()}`,
+      );
+    }
+    if (application.other_income_source) {
+      submission.append(
+        'Other Income Source',
+        application.other_income_source,
+      );
+    }
+
+    submission.append(
+      'Has Co-Applicant',
+      application.has_co_applicant || 'No',
+    );
+
+    if (application.has_co_applicant === 'Yes') {
+      const coApplicantName =
+        `${application.co_first_name || ''} ${application.co_last_name || ''}`.trim();
+      const coApplicantBirthDate = [
+        application.co_birth_month,
+        application.co_birth_day,
+        application.co_birth_year,
+      ]
+        .filter(Boolean)
+        .join('/');
+
+      submission.append('--- CO-APPLICANT ---', '---');
+      submission.append('Co-Applicant Name', coApplicantName);
+      submission.append(
+        'Co-Applicant Middle Initial',
+        application.co_middle_initial || '',
+      );
+      submission.append('Co-Applicant SSN', application.co_ssn || '');
+      submission.append('Co-Applicant DOB', coApplicantBirthDate);
+      submission.append('Co-Applicant Phone', application.co_phone || '');
+      submission.append('Co-Applicant Email', application.co_email || '');
+      submission.append(
+        'Co-Applicant Address',
+        [
+          application.co_address,
+          application.co_apt,
+          application.co_city,
+          application.co_state,
+          application.co_zip,
+        ]
+          .filter(Boolean)
+          .join(', '),
+      );
+      submission.append(
+        'Co-Applicant Years at Address',
+        application.co_years_at_address || '',
+      );
+      submission.append(
+        'Co-Applicant Residence Type',
+        application.co_residence_type || '',
+      );
+      submission.append(
+        'Co-Applicant Monthly Payment',
+        application.co_monthly_payment
+          ? `$${Number(application.co_monthly_payment).toLocaleString()}`
+          : '$0',
+      );
+
+      submission.append('--- CO-APPLICANT EMPLOYMENT ---', '---');
+      submission.append(
+        'Co-Applicant Employer',
+        application.co_employer || '',
+      );
+      submission.append(
+        'Co-Applicant Employer Phone',
+        application.co_employer_phone || '',
+      );
+      submission.append(
+        'Co-Applicant Business Address',
+        [
+          application.co_business_address,
+          application.co_business_suite,
+          application.co_business_city,
+          application.co_business_state,
+          application.co_business_zip,
+        ]
+          .filter(Boolean)
+          .join(', '),
+      );
+      submission.append(
+        'Co-Applicant Years Employed',
+        application.co_years_employed || '',
+      );
+      submission.append(
+        'Co-Applicant Position',
+        application.co_position || '',
+      );
+      submission.append(
+        'Co-Applicant Gross Income',
+        application.co_gross_income
+          ? `$${Number(application.co_gross_income).toLocaleString()}`
+          : '',
+      );
+      if (application.co_other_income) {
+        submission.append(
+          'Co-Applicant Other Income',
+          `$${Number(application.co_other_income).toLocaleString()}`,
+        );
+      }
+      if (application.co_other_income_source) {
+        submission.append(
+          'Co-Applicant Other Income Source',
+          application.co_other_income_source,
+        );
+      }
+    }
+
+    submission.append('--- AGREEMENT ---', '---');
+    submission.append('Agreed to Terms', 'Yes');
+    submission.append('Submitted At', new Date().toLocaleString('en-US'));
 
     setIsSubmitting(true);
 
     try {
-      const response = await fetch(endpoint, {
+      const response = await fetch('https://api.web3forms.com/submit', {
         method: 'POST',
-        body: formData,
+        body: submission,
       });
+      const result = await response.json();
 
-      if (!response.ok) {
-        throw new Error('The application could not be submitted.');
+      if (!response.ok || !result.success) {
+        throw new Error(
+          result.message || 'The application could not be submitted.',
+        );
       }
 
+      downloadCreditApplicationPdf(application);
       setSubmitted(true);
     } catch (submissionError) {
       setError(
@@ -484,8 +681,8 @@ export default function CreditApplication() {
               </p>
             </div>
             <p className="max-w-xs rounded border border-neutral-800 bg-black/60 p-4 text-sm leading-6 text-gray-500">
-              Your information must be transmitted only to the configured
-              secure application endpoint.
+              Complete each required field and review the application before
+              submitting.
             </p>
           </div>
         </div>
@@ -602,8 +799,8 @@ export default function CreditApplication() {
         </button>
 
         <p className="text-center text-xs leading-5 text-gray-600">
-          Do not enable this form until a secure, access-controlled application
-          endpoint has been configured.
+          Your completed application will be submitted and a PDF copy will
+          download automatically.
         </p>
       </form>
     </main>
