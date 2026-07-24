@@ -4,6 +4,7 @@ import {
   Star, Shield, ThumbsUp, Car, Loader2, ArrowLeft,
   FileText, MessageSquare, Lock, UserCheck, Mail
 } from 'lucide-react';
+import CreditApplication from './CreditApplication';
 
 // ==========================================
 // 1. DATA
@@ -157,6 +158,7 @@ const Header = () => {
     { label: 'About Us', href: '#about' },
     { label: 'Lease Deals', href: '#deals' },
     { label: 'How It Works', href: '#how-it-works' },
+    { label: 'Applications', href: '#apply' },
     { label: 'FAQs', href: '#faqs' },
     { label: 'Privacy Policy', href: '#privacy-policy' },
   ];
@@ -866,6 +868,8 @@ export default function App() {
   useEffect(() => {
     document.title = route === '#privacy-policy'
       ? 'Privacy Policy | Alpha Auto'
+      : route === '#apply'
+        ? 'Credit Application | Alpha Auto'
       : 'Alpha Auto | Car Lease Deals';
 
     const frame = window.requestAnimationFrame(() => {
@@ -877,12 +881,15 @@ export default function App() {
   }, [route]);
 
   const isPrivacyPolicy = route === '#privacy-policy';
+  const isCreditApplication = route === '#apply';
 
   return (
     <div className="min-h-screen bg-black font-sans text-white selection:bg-red-600 selection:text-white">
       <Header />
       {isPrivacyPolicy ? (
         <PrivacyPolicy />
+      ) : isCreditApplication ? (
+        <CreditApplication />
       ) : (
         <main>
           <Hero />
